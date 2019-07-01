@@ -29,6 +29,10 @@ workload=com.yahoo.ycsb.workloads.CoreWorkload
 maxexecutiontime=3600
 
 readallfields=true
+fieldcount=8
+fieldlength=512
+
+writeallfields=true
 
 readproportion=0.05
 updateproportion=0.95

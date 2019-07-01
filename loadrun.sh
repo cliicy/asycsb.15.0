@@ -15,7 +15,7 @@ exetime=3600
 
 #ret=y means always use the configure file of workloads/workloada 
 ret=y 
-
+name_css_status=cssv-status.sh
 
 function collect_sys_info() {
  # collect sys information, including
@@ -81,7 +81,7 @@ function prepare_conf()
 while getopts :a:b:e:l:n:m:d:h:c:w:t:r:o:s:g:p:i: vname 
 do
     case "$vname" in
-       a) #echo "$OPTARG: load | run"
+       a) #echo "$OPTARG: load | run | loadrun"
           action=$OPTARG
           ;;
        g) 
@@ -133,7 +133,7 @@ do
        o) echo "YCSB conf file path: $OPTARG"
           conf=$OPTARG
           ;;
-       h) echo "-a for phrase: load | run" 
+       h) echo "-a for phrase: load | run | loadrun" 
           echo "-b : the name of storage"
           echo "-w : using the workloads/workloada totally? y|n"
           echo "-h for help"
@@ -298,7 +298,7 @@ result2csv()
         cat $f | grep "current ops/sec" | sed -r 's/.*operations;\s([0-9.]+)\scurrent\sops.*\[READ:.*Max=([0-9]+).*Min=([0-9.]+).*Avg=([0-9.]+).*90=([0-9.]+).*99=([0-9.]+).*99.9=([0-9.]+).*99.99=([0-9.]+)\]\s+\[.*/\1,\2,\3,\4,\5,\6,\7,\8/g' >> ${f}.read.csv
         fi
 
-        cat $f | -iq grep "\[UPDATE:"
+        cat $f | grep -iq "\[UPDATE:"
         if [  $? == 0 ]; then
             pct_lat="Max-update,Min-update,Avg-update,90-update,99-update,99.9-update,99.99-update"
             echo "ops/sec,${pct_lat} latency" > ${f}.update.csv
@@ -375,7 +375,7 @@ function doload()
     lsblk >> $outfile
     echo -e "\n"  >> $outfile
     #sudo css-status.sh >> $outfile
-    collect_sys_info $presult cssv-status.sh
+    collect_sys_info $presult ${name_css_status} 
     echo -e "\n"  >> $outfile
     asadm -h $host -p $port -e info >> $outfile
     echo -e "\n"  >> $outfile
@@ -475,7 +475,7 @@ function dorun()
     lsblk >> $outfile
     echo -e "\n"  >> $outfile
     #sudo css-status.sh >> $outfile
-    collect_sys_info $presult cssv-status.sh
+    collect_sys_info $presult ${name_css_status} 
     echo -e "\n"  >> $outfile
     asadm -h $host -p $port -e info >> $outfile
     echo -e "\n"  >> $outfile
@@ -519,10 +519,12 @@ function dorun()
     kill_sublogprocess
 }
 
-if [ "$action" = "load" ];then
+if [ "$action" = "loadrun" ];then
     #cls_data $device
     doload $device $bldevice
     dorun  $device $bldevice
+elif [ "$action" = "load" ];then
+    doload $device $bldevice
 elif [ "$action" = "run" ];then
     dorun $device $bldevice
 else
