@@ -3,6 +3,7 @@
 rcount=500000000
 #rcount=500
 maxetime=3600
+loadmaxetime=14400
 #maxetime=60
 host=192.168.11.52
 port=3052
@@ -29,8 +30,8 @@ do
             echo "**** bload=${bload}"
             if [ "${bload}" == "1" ]; then
                 action=load
-                echo "./loadrun.sh -a ${action} -n css_${ds} -b ${ds} -t 100 -r ${rcount} -c device -w n -g ${host} -p ${port} -l ${maxetime} -o ./asycsb_cfg/${workload}  -e ${dp}"
-                ./loadrun.sh -a ${action} -n css_${ds} -b ${ds} -t ${threads} -r ${rcount} -c device -w n -g ${host} -p ${port} -l ${maxetime} -o ./asycsb_cfg/${workload} -e ${dp}
+                echo "./loadrun.sh -a ${action} -n css_${ds} -b ${ds} -t 100 -r ${rcount} -c device -w n -g ${host} -p ${port} -l ${loadmaxetime} -o ./asycsb_cfg/${workload}  -e ${dp}"
+                ./loadrun.sh -a ${action} -n css_${ds} -b ${ds} -t ${threads} -r ${rcount} -c device -w n -g ${host} -p ${port} -l ${loadmaxetime} -o ./asycsb_cfg/${workload} -e ${dp}
                 bload=0
             fi
             action=run
