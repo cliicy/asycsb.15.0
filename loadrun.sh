@@ -247,7 +247,6 @@ presult=$root_dir/$prefix
 mkdir -p $presult/csv
 cp -P $conf_dir/$default_conf $presult
 dsfxmessage=/var/log/sfx_messages
-running=$presult/$action
 
 
 iostat2csv()
@@ -325,22 +324,21 @@ flagjournal=journal.statue
 
 function doload()
 {
+    action=load
     device=$1
     io_sfx=$2
     echo device=$1 io_sfx=$2
-    ppath=$running
-    
+    ppath=$presult/$action
+
     if [ "$device" = "ext4" ];then
         sudo dumpe2fs /dev/$2 | grep 'Filesystem features' | grep 'has_journal' | awk '{print $1 $2 $3}' > $flagjournal
         #cat $flagjournal
         if [ `grep "has_journal" $flagjournal` ];then
             echo "enable journal"
-            #running=$running.has_journal
-            ppath=$running.has_journal
+            ppath=$ppath.has_journal
         else
             echo "disabled journal"
-            #running=${running/has_journal/no_journal}
-            ppath=$running.no_journal
+            ppath=$ppath.no_journal
         fi
     fi
 

@@ -56,3 +56,21 @@ Run the workload test:
 
     ./bin/ycsb run aerospike -s -P workloads/workloada >outputRun.txt
 
+
+steps:
+mkdir -p /opt/app/benchmark/aerospike/
+sudo mkdir -p /opt/app/benchmark
+pushd /opt/app/benchmark
+git clone xxxx
+cp ./compress /opt/app/benchmark/aerospike/
+
+scp -r tcn@192.168.10.202:/home/tcn/driver/aerospike-server-community-4.5.2.2-el7.tgz .
+tar -zvxf aerospike-server-community-4.5.2.2-el7.tgz
+sudo ./asinstall
+sudo rpm -ivh aerospike-tools-3.18.1-1.el7.x86_64.rpm
+./bin/ycsb load aerospike -s -P workloads/workloada -p as.namespace=test
+lspci -d cc5
+
+
+yum install nvmetcli.noarch
+sudo yum install nvme-cli.x86_64
