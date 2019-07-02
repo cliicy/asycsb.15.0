@@ -55,6 +55,15 @@ mkpart primary 50% 100%
 quit
 " | sudo parted ${sfxcss}
          ;; 
+       3) 
+         echo "3 partion" 
+         echo "mklabel gpt
+mkpart primary 0% 33%
+mkpart primary 33% 66%
+mkpart primary 66% 100%
+quit
+" | sudo parted ${sfxcss}
+         ;; 
        4) 
          echo "4 partion" 
          echo "mklabel gpt
