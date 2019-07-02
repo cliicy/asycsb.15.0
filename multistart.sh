@@ -21,7 +21,7 @@ do
     if [ "${disksize}" == "2.9T" ]; then
         arr=${rcnts_3_2T}
         dp=2
-    elif [ "${disksize}" == "6.9T" ]; then
+    elif [ "${disksize}" == "6.9T" -o "${disksize}" == "5.8T" ]; then
         arr=${rcnts_6_4T}
         dp=3
     fi
