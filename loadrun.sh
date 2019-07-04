@@ -15,7 +15,11 @@ exetime=3600
 
 #ret=y means always use the configure file of workloads/workloada 
 ret=y 
-name_css_status=cssv-status.sh
+
+name_css_status=`locate cssv-status.sh`
+ if [ "${name_css_status}" == "" ]; then
+     name_css_status=`locate css-status.sh`
+ fi 
 
 function collect_sys_info() {
  # collect sys information, including
@@ -365,11 +369,15 @@ function doload()
     echo $! > $iostat_pid
 
     outfile=$ppath.$device.result
-
+    vanda_dbinfo=${ppath}_vanda.dbsize
     #is_aeroser_active $as_log $action
     #asinfo -h $host -p $port -v service
 
     echo -e "$device $action phrase starts at:  "$logctime "\n"  > $outfile
+
+    echo -e "$device $action vanda dbsize starting at: "$logctime "\n"  > ${vanda_dbinfo}
+    cat /sys/block/sfdv0n1/sfx_smart_features/sfx_capacity_stat >> ${vanda_dbinfo}
+
     lsblk >> $outfile
     echo -e "\n"  >> $outfile
     #sudo css-status.sh >> $outfile
@@ -409,6 +417,9 @@ function doload()
     df -h /dev/$bldevice >> $outfile
     ls -lah /dev/$bldevice >> $outfile
     free -h >> $outfile
+
+    echo -e "$device $action vanda dbsize ending at: "$cendtime "\n"  >> ${vanda_dbinfo}
+    cat /sys/block/sfdv0n1/sfx_smart_features/sfx_capacity_stat >> ${vanda_dbinfo}
     #sudo netstat -nap | grep $port  >> $outfile
 
     echo -e "\n$device $action phrase ends at: "$cendtime "\n"  >> $outfile &
@@ -466,10 +477,12 @@ function dorun()
     echo $! > $iostat_pid
 
     outfile=$pp.$device.result
-
+    vanda_dbinfo=${pp}_vanda.dbsize
 
     echo -e "$device $action phrase starts at:  "$logctime "\n"  > $outfile
 
+    echo -e "$device $action vanda dbsize starting at: "$logctime "\n"  > ${vanda_dbinfo}
+    cat /sys/block/sfdv0n1/sfx_smart_features/sfx_capacity_stat >> ${vanda_dbinfo}
     lsblk >> $outfile
     echo -e "\n"  >> $outfile
     #sudo css-status.sh >> $outfile
@@ -497,6 +510,9 @@ function dorun()
     cendtime=$flag`date +%Y%m%d_%H:%M:%S`
     
     echo -e "\n"  >> $outfile
+    
+    echo -e "$device $action vanda dbsize ending at: "$cendtime "\n"  >> ${vanda_dbinfo}
+    cat /sys/block/sfdv0n1/sfx_smart_features/sfx_capacity_stat >> ${vanda_dbinfo}
     asadm -h $host -p $port -e info >> $outfile
     echo -e "\n"  >> $outfile
     du -h /dev/$bldevice >> $outfile

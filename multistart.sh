@@ -1,14 +1,19 @@
 #!/bin/bash
 
-rcnts_3_2T="600000000 590000000 550000000 510000000 470000000 430000000 400000000"
-rcnts_6_4T="1000000000 937500000 875000000 812500000 750000000 687500000 625000000"
+#rcnts_3_2T="600000000 590000000 550000000 510000000 470000000 430000000 400000000"
+rcnts_3_2T="400000000"
+#rcnts_3_2T="40000"
+#rcnts_6_4T="1200000000 937500000 875000000 812500000 750000000 687500000 625000000"
+rcnts_6_4T="800000000"
+#rcnts_6_4T="80000"
 #rcount=500
 maxetime=3600
+#maxetime=60
 loadmaxetime=14400
-host=192.168.11.52
-port=3052
-disk="nvme0n1 sfd1n1"
-#disk="sfdv0n1"
+host=192.168.4.139
+port=3039
+#disk="nvme0n1 sfd1n1"
+disk="sfdv0n1"
 #disk="nvme0n1"
 threads=30
 action=loadrun
@@ -24,11 +29,14 @@ do
     elif [ "${disksize}" == "5.8T" ]; then
         arr=${rcnts_6_4T}
         dp=3
+    elif [ "${disksize}" == "6.3T" ]; then
+        arr=${rcnts_6_4T}
+        dp=3
     fi
     echo ${arr}
     for rcount in ${arr};
     do
-        workload_set="5_95_0_best_workloada 50_50_0_best_workloada"
+        workload_set="50_50_0_best_workloada 5_95_0_best_workloada"
         for workload in ${workload_set};
         do
             echo "**** bload=${bload}"
@@ -36,12 +44,12 @@ do
                 echo "sh ./parteddevice.sh "${ds}" ${dp} rcount=${rcount} ++++++++++"
                 sh ./parteddevice.sh "${ds}" ${dp}
                 action=load
-                echo "./loadrun.sh -a ${action} -n css_${ds} -b ${ds} -t 100 -r ${rcount} -c device -w n -g ${host} -p ${port} -l ${loadmaxetime} -o ./asycsb_cfg/${workload}  -e ${dp}"
+                echo "./loadrun.sh -a ${action} -n css_${ds} -b ${ds} -t ${threads} -r ${rcount} -c device -w n -g ${host} -p ${port} -l ${loadmaxetime} -o ./asycsb_cfg/${workload}  -e ${dp}"
                 sh ./loadrun.sh -a ${action} -n css_${ds} -b ${ds} -t ${threads} -r ${rcount} -c device -w n -g ${host} -p ${port} -l ${loadmaxetime} -o ./asycsb_cfg/${workload} -e ${dp}
                 bload=0
             fi
             action=run
-            echo "./loadrun.sh -a ${action} -n css_${ds} -b ${ds} -t 100 -r ${rcount} -c device -w n -g ${host} -p ${port} -l ${maxetime} -o ./asycsb_cfg/${workload}  -e ${dp}"
+            echo "./loadrun.sh -a ${action} -n css_${ds} -b ${ds} -t ${threads} -r ${rcount} -c device -w n -g ${host} -p ${port} -l ${maxetime} -o ./asycsb_cfg/${workload}  -e ${dp}"
             sh ./loadrun.sh -a ${action} -n css_${ds} -b ${ds} -t ${threads} -r ${rcount} -c device -w n -g ${host} -p ${port} -l ${maxetime} -o ./asycsb_cfg/${workload} -e ${dp}
         done
     done
