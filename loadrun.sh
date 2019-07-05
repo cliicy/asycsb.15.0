@@ -273,6 +273,25 @@ iostat2csv()
     done
 }
 
+function aslog2csv()
+{
+    for f in `ls $presult/*.as_log`;
+    do
+        echo "device,used-bytes,free-wblocks,write,defrag-q,defrag-read,defrag-write" > ${f}.defrag.csv
+        aslog_usage_fields="10,12,14,18,20,22,24"
+        cat $f | grep defrag-write | awk '{print $10,$12,$14,$18,$20,$22,$24}' >> ${f}.defrag.csv
+
+        echo "free-kbytes,free-pct" > ${f}.sysmemory.csv
+        aslog_usage_fields="11,13"
+        cat $f | grep system-memory: | sed -r 's/\s+/,/g' | cut -d , -f ${aslog_usage_fields} >> ${f}.sysmemory.csv
+
+
+        echo "used-bytes,avail-pct,cache-read-pct" > ${f}.availpct.csv
+        aslog_usage_fields="12,14,16"
+        cat $f | grep device-usage: | sed -r 's/\s+/,/g' | cut -d , -f ${aslog_usage_fields} >> ${f}.availpct.csv
+    done
+    mv *.csv $presult/csv/
+}
 
 result2csv()
 {
@@ -391,6 +410,7 @@ function doload()
     free -h >> $outfile
     #sudo netstat -nap | grep $port  >> $outfile
     echo -e "\n"  >> $outfile
+    cp -P $conf $presult/${workload}
 
     if [ "$ret" = "n" ];then
         echo "characterize parameters......namespace=$namespace threads=$thread  recordcount=$recount p=$port"
@@ -406,8 +426,6 @@ function doload()
        echo "./bin/ycsb load aerospike -s -P ${conf} >> $outfile 2>&1.... $action"
        ./bin/ycsb load aerospike -s -P ${conf} >> $outfile 2>&1
     fi
-    echo "66666666666  ${workload} cp -P $conf $presult/${workload}  666666"
-    cp -P $conf $presult/${workload}
     cendtime=$flag`date +%Y%m%d_%H:%M:%S`
     
     echo -e "\n"  >> $outfile
@@ -430,6 +448,7 @@ function doload()
     rm -rf $presult/*pid
     iostat2csv
     result2csv ${workload} 
+    aslog2csv
     kill_sublogprocess
 }
 
@@ -497,6 +516,9 @@ function dorun()
     #sudo netstat -nap | grep $port  >> $outfile
     echo -e "\n"  >> $outfile
 
+    echo "------- cp -P ${conf} $presult/${workload}-------"
+    cp -P ${conf} $presult/${workload}
+
     if [ "$ret" = "n" ];then
         echo "bin/ycsb run aerospike -P ${conf} -p as.host=$host -p as.port=$port -p as.namespace=$namespace -threads $thread -p maxexecutiontime=$exetime -p recordcount=$recount -s >> $outfile 2>&1" >> $outfile
         ./bin/ycsb run aerospike -P ${conf} -p as.host=$host -p as.port=$port -p as.namespace=$namespace -threads $thread -p maxexecutiontime=$exetime -p recordcount=$recount -s >> $outfile 2>&1
@@ -505,8 +527,6 @@ function dorun()
         ret=`./bin/ycsb run aerospike -s -P ${conf} >> $outfile 2>&1`
     fi
 
-    echo "------- cp -P ${conf} $presult/${workload}-------"
-    cp -P ${conf} $presult/${workload}
     cendtime=$flag`date +%Y%m%d_%H:%M:%S`
     
     echo -e "\n"  >> $outfile
@@ -530,6 +550,7 @@ function dorun()
     rm -rf $presult/*pid
     iostat2csv
     result2csv ${workload}
+    aslog2csv
     kill_sublogprocess
 }
 
