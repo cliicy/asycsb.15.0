@@ -27,7 +27,7 @@ function aslog2csv()
     do
         echo "device,used-bytes,free-wblocks,write,defrag-q,defrag-read,defrag-write" > ${f}.defrag.csv
         aslog_usage_fields="10,12,14,18,20,22,24"
-        cat $f | grep defrag-write | awk '{print $10,$12,$14,$18,$20,$22,$24}' >> ${f}.defrag.csv
+        cat $f | grep defrag-write | awk '{gsub(":","",$0);gsub(",","|",$0);print $10",",$12",",$14",",$18",",$20",",$22",",$24}' >> ${f}.defrag.csv
         
         echo "free-kbytes,free-pct" > ${f}.sysmemory.csv
         aslog_usage_fields="11,13"
