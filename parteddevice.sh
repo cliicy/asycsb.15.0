@@ -35,8 +35,16 @@ do
 sfxcss=/dev/${device}
 sudo umount ${sfxcss}
 
-echo "sudo nvme format ${sfxcss}"
-sudo nvme format ${sfxcss}
+if [ "" != "echo ${device} | grep sfdv" ];then
+    css_status=`locate css-status.sh`
+    css_status_dir=${css_status%css-status.sh}
+    pushd ${css_status_dir}
+    sudo sh ./initcard.sh --blk --cl --capacity=6400
+    
+else
+    echo "sudo nvme format ${sfxcss}"
+    sudo nvme format ${sfxcss}
+fi
 sleep 30
 
 case $2 in 

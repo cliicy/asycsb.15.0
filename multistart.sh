@@ -4,7 +4,8 @@
 rcnts_3_2T="400000000"
 #rcnts_3_2T="40000"
 #rcnts_6_4T="1200000000 937500000 875000000 812500000 750000000 687500000 625000000"
-rcnts_6_4T="800000000"
+rcnts_6_4T="1250000000"
+#rcnts_6_4T="800000000"
 #rcnts_6_4T="80000"
 #rcount=500
 maxetime=3600
@@ -36,7 +37,8 @@ do
     echo ${arr}
     for rcount in ${arr};
     do
-        workload_set="50_50_0_best_workloada 5_95_0_best_workloada"
+        #workload_set="50_50_0_best_workloada 5_95_0_best_workloada"
+        workload_set="50_50_0_best_workloada"
         for workload in ${workload_set};
         do
             echo "**** bload=${bload}"
