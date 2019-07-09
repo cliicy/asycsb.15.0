@@ -40,7 +40,7 @@ if [ "" != "echo ${device} | grep sfdv" ];then
     css_status_dir=${css_status%css-status.sh}
     pushd ${css_status_dir}
     sudo sh ./initcard.sh --blk --cl --capacity=6400
-    
+    popd    
 else
     echo "sudo nvme format ${sfxcss}"
     sudo nvme format ${sfxcss}
@@ -101,7 +101,7 @@ done
 
 as_conf=${2}Part_${device}_aerospike.conf
 echo cp ./aerospike_conf/${as_conf} /etc/aerospike/aerospike.conf
-sudo cp -f ./aerospike_conf/${as_conf} /etc/aerospike/aerospike.conf
+sudo cp -f `pwd`/aerospike_conf/${as_conf} /etc/aerospike/aerospike.conf
 sudo service aerospike restart
 is_as_started
 sleep 120

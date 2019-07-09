@@ -4,9 +4,11 @@
 rcnts_3_2T="400000000"
 #rcnts_3_2T="40000"
 #rcnts_6_4T="1200000000 937500000 875000000 812500000 750000000 687500000 625000000"
-rcnts_6_4T="1250000000"
-#rcnts_6_4T="800000000"
+#rcnts_6_4T="1250000000"
+#rcnts_6_4T="900000000"
+rcnts_6_4T="1300000000"
 #rcnts_6_4T="80000"
+#rcnts_6_4T="500"
 #rcount=500
 maxetime=3600
 #maxetime=60
@@ -17,11 +19,16 @@ port=3039
 disk="sfdv0n1"
 #disk="nvme0n1"
 threads=30
-action=loadrun
 
 for ds in ${disk};
 do
-    bload=1
+    action=loadrun
+    action=run
+    if [ "${action}" == "run" ]; then
+        bload=0
+    else
+       bload=1
+    fi
     disksize=`lsblk | grep -w ${ds}  |awk '{ print $4}'`
     echo ${disksize}
     if [ "${disksize}" == "2.9T" ]; then

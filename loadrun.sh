@@ -12,7 +12,7 @@ asrestart=0
 insertstart=1
 oneY=100000000
 exetime=3600
-
+timeout=500000
 #ret=y means always use the configure file of workloads/workloada 
 ret=y 
 
@@ -289,8 +289,8 @@ function aslog2csv()
         echo "used-bytes,avail-pct,cache-read-pct" > ${f}.availpct.csv
         aslog_usage_fields="12,14,16"
         cat $f | grep device-usage: | sed -r 's/\s+/,/g' | cut -d , -f ${aslog_usage_fields} >> ${f}.availpct.csv
+        mv ${f}*.csv $presult/csv/
     done
-    mv *.csv $presult/csv/
 }
 
 result2csv()
@@ -421,7 +421,7 @@ function doload()
             echo ${conf}
         fi
         echo "bin/ycsb load aerospike -P $conf -p as.host=$host -p as.port=$port -p as.namespace=$namespace -threads $thread -p recordcount=$recount -s >> $outfile 2>&1 " 
-        ./bin/ycsb load aerospike -P ${conf} -p as.host=$host -p as.port=$port -p as.namespace=$namespace -threads $thread -p recordcount=$recount -s >> $outfile 2>&1
+        ./bin/ycsb load aerospike -P ${conf} -p as.host=$host -p as.port=$port -p as.namespace=$namespace -threads $thread -p maxexecutiontime=$exetime -p recordcount=$recount -s >> $outfile 2>&1
     elif [ "$ret" = "y" ];then
        echo "./bin/ycsb load aerospike -s -P ${conf} >> $outfile 2>&1.... $action"
        ./bin/ycsb load aerospike -s -P ${conf} >> $outfile 2>&1
@@ -520,8 +520,8 @@ function dorun()
     cp -P ${conf} $presult/${workload}
 
     if [ "$ret" = "n" ];then
-        echo "bin/ycsb run aerospike -P ${conf} -p as.host=$host -p as.port=$port -p as.namespace=$namespace -threads $thread -p maxexecutiontime=$exetime -p recordcount=$recount -s >> $outfile 2>&1" >> $outfile
-        ./bin/ycsb run aerospike -P ${conf} -p as.host=$host -p as.port=$port -p as.namespace=$namespace -threads $thread -p maxexecutiontime=$exetime -p recordcount=$recount -s >> $outfile 2>&1
+        echo "bin/ycsb run aerospike -P ${conf} -p as.host=$host -p as.port=$port -p as.namespace=$namespace -threads $thread -p maxexecutiontime=$exetime -p recordcount=$recount -p as.timeout=${timeout} -s >> $outfile 2>&1" >> $outfile
+        ./bin/ycsb run aerospike -P ${conf} -p as.host=$host -p as.port=$port -p as.namespace=$namespace -threads $thread -p maxexecutiontime=$exetime -p recordcount=$recount -p as.timeout=${timeout} -s >> $outfile 2>&1
     elif [ "$ret" = "y" ];then
         echo "bin/ycsb run aerospike -s -P ${conf} >> $outfile...... $action"
         ret=`./bin/ycsb run aerospike -s -P ${conf} >> $outfile 2>&1`
